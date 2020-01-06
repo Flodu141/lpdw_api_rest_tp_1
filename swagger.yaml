@@ -5,6 +5,30 @@ info:
   title: "API template"
 servers:
   - url: 'http://localhost:3000/'
+
+
+components:
+  schemas:
+    Vol:
+      type: object
+      properties:
+        volNum:
+          type: string
+        dateDepart:
+          type: datetime
+        villeDepart:
+          type: string
+        villeArrive:
+          type: string
+        statut:
+          type: string
+      required:
+        - volNum
+        - dateDepart
+        - villeDepart
+        - villeArrive
+        - statut
+
 paths:
   /vols:
     get:
@@ -24,6 +48,20 @@ paths:
           schema:
             type: string
           description: "Aéroport d'arrivée"
+      responses:
+        '200':
+          description: "La liste des vols"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/schemas/Vol'
+
+        '400':
+          description: "Paramètres invalides"
+        '404':
+          description: "Vol non trouvé avec les filtres"
     post:
       tags:
         - "Vols"
@@ -34,20 +72,37 @@ paths:
           application/json:
             schema:
               type: object
-              properties:
-                volName:
-                  type: string
-                dateDepart:
-                  type: datetime
-                villeDepart:
-                  type: string
-                villeArrive:
-                  type: string
+              $ref: '#/components/schemas/Vol'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Vol'
+      responses:
+        '201':
+          description: "Vol créé"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                $ref: '#/components/schemas/Vol'
+        '400':
+          description: "Une ou plusieurs données sont invalides"
+        '409':
+          description: "Duplication de données"
   /vol/{idVol}:
     get:
       tags:
         - "Vols"
       summary: "Consulter un vol spécificique avec son identifiant"
+      responses:
+        '200':
+          description: "Le détail du vol"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                $ref: '#/components/schemas/Vol'
+        '404':
+          description: "Vol non trouvé avec l'identifiant fournit"
       parameters:
         - name: idVol
           in: path
@@ -77,14 +132,17 @@ paths:
             schema:
               type: object
               properties:
-                volName:
-                  type: string
                 dateDepart:
                   type: datetime
-                villeDepart:
+                statut:
                   type: string
-                villeArrive:
-                  type: string
+      responses:
+        '200':
+          description: "OK. Le vol existe et les données sont valides"
+        '400':
+          description: "Une ou plusieurs données sont invalides"
+        '404':
+          description: "Vol non trouvé avec l'identifiant fournit"
     delete:
       tags:
         - "Vols"
@@ -98,3 +156,8 @@ paths:
             type: integer
             format: int64
             minimum: 1
+      responses:
+        '204':
+          description: "Le vol est supprimé"
+        '404':
+          description: "Vol non trouvé avec l'identifiant fournit"
