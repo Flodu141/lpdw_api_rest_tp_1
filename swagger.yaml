@@ -6,26 +6,95 @@ info:
 servers:
   - url: 'http://localhost:3000/'
 paths:
-  /users:
+  /vols:
     get:
       tags:
-        - "users"
-      summary: "It should send a list of users"
-  /example/{pathParam}:
-    get:
-      tags:
-        - "resource"
+        - "Vols"
+      summary: "Lister tous les vols possibles"
       parameters:
-        - name: pathParam
+        - in: query
+          name: depart
+          required: false
+          schema:
+            type: string
+          description: "Aéroport de départ"
+        - in: query
+          name: destination
+          required: false
+          schema:
+            type: string
+          description: "Aéroport d'arrivée"
+    post:
+      tags:
+        - "Vols"
+      summary: "Créer un vol"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                volName:
+                  type: string
+                dateDepart:
+                  type: datetime
+                villeDepart:
+                  type: string
+                villeArrive:
+                  type: string
+  /vol/{idVol}:
+    get:
+      tags:
+        - "Vols"
+      summary: "Consulter un vol spécificique avec son identifiant"
+      parameters:
+        - name: idVol
           in: path
-          description: A variable value passed on the path part of the URL
           required: true
+          description: "Identifiant du vol"
           schema:
-            type: string
-          example: value1
-        - name: filter
-          in: query
+            type: integer
+            format: int64
+            minimum: 1
+    put:
+      tags:
+        - "Vols"
+      summary: "Editer un vol."
+      parameters:
+        - name: idVol
+          in: path
+          required: true
+          description: "Identifiant du vol"
           schema:
-            type: string
-          description: A variable value passed on the querystring part of the URL
-      summary: "This is an example to show you a definition of an endpoint"
+            type: integer
+            format: int64
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                volName:
+                  type: string
+                dateDepart:
+                  type: datetime
+                villeDepart:
+                  type: string
+                villeArrive:
+                  type: string
+    delete:
+      tags:
+        - "Vols"
+      summary: "Supprimer un vol"
+      parameters:
+        - name: idVol
+          in: path
+          required: true
+          description: "Identifiant du vol"
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
